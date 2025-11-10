@@ -1,0 +1,21 @@
+services:
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:1.25.4
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      - ./weaviate_data:/var/lib/weaviate
+    environment:
+      ENABLE_MODULES: 'text2vec-transformers'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-transformers'
+      TRANSFORMERS_INFERENCE_API: 'http://t2v-custom:8080'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      CLUSTER_HOSTNAME: 'node1'
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+    depends_on:
+      - t2v-custom 
+  t2v-custom:
+    build: 
+      context: ./light_t2v_custom  
+    image: my-transformers-bge-cpu 
