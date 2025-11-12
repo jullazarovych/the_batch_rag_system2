@@ -89,7 +89,7 @@
       "avg_chunk_length": 673.3793103448276,
       "avg_chunks_per_article": 7.25
     },
-    "scraped_at": "2025-11-10T21:11:04.724584"
+    "scraped_at": "2025-11-11T15:04:49.352757"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-295/",
@@ -174,7 +174,7 @@
       "avg_chunk_length": 648.1818181818181,
       "avg_chunks_per_article": 5.5
     },
-    "scraped_at": "2025-11-10T21:11:06.334048"
+    "scraped_at": "2025-11-11T15:04:50.892216"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-294/",
@@ -259,7 +259,7 @@
       "avg_chunk_length": 701.0454545454545,
       "avg_chunks_per_article": 5.5
     },
-    "scraped_at": "2025-11-10T21:11:07.889761"
+    "scraped_at": "2025-11-11T15:04:52.487883"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-293/",
@@ -348,7 +348,7 @@
       "avg_chunk_length": 647.0,
       "avg_chunks_per_article": 6.5
     },
-    "scraped_at": "2025-11-10T21:11:09.429882"
+    "scraped_at": "2025-11-11T15:04:54.034788"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-292/",
@@ -436,7 +436,7 @@
       "avg_chunk_length": 676.92,
       "avg_chunks_per_article": 6.25
     },
-    "scraped_at": "2025-11-10T21:11:10.963779"
+    "scraped_at": "2025-11-11T15:04:55.585501"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-291/",
@@ -521,7 +521,7 @@
       "avg_chunk_length": 732.1818181818181,
       "avg_chunks_per_article": 5.5
     },
-    "scraped_at": "2025-11-10T21:11:12.463677"
+    "scraped_at": "2025-11-11T15:04:57.230231"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-290/",
@@ -607,7 +607,7 @@
       "avg_chunk_length": 728.7391304347826,
       "avg_chunks_per_article": 5.75
     },
-    "scraped_at": "2025-11-10T21:11:14.020159"
+    "scraped_at": "2025-11-11T15:04:58.776581"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-289/",
@@ -690,7 +690,7 @@
       "avg_chunk_length": 750.7,
       "avg_chunks_per_article": 5.0
     },
-    "scraped_at": "2025-11-10T21:11:15.558360"
+    "scraped_at": "2025-11-11T15:05:00.345316"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-288/",
@@ -776,7 +776,7 @@
       "avg_chunk_length": 676.9565217391304,
       "avg_chunks_per_article": 5.75
     },
-    "scraped_at": "2025-11-10T21:11:17.062553"
+    "scraped_at": "2025-11-11T15:05:01.964881"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-287/",
@@ -864,7 +864,7 @@
       "avg_chunk_length": 659.72,
       "avg_chunks_per_article": 6.25
     },
-    "scraped_at": "2025-11-10T21:11:18.608799"
+    "scraped_at": "2025-11-11T15:05:03.673705"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-286/",
@@ -948,7 +948,7 @@
       "avg_chunk_length": 681.1904761904761,
       "avg_chunks_per_article": 5.25
     },
-    "scraped_at": "2025-11-10T21:11:20.173398"
+    "scraped_at": "2025-11-11T15:05:05.252859"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-285/",
@@ -1036,7 +1036,7 @@
       "avg_chunk_length": 713.92,
       "avg_chunks_per_article": 6.25
     },
-    "scraped_at": "2025-11-10T21:11:21.740275"
+    "scraped_at": "2025-11-11T15:05:07.341304"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-284/",
@@ -1124,7 +1124,7 @@
       "avg_chunk_length": 629.84,
       "avg_chunks_per_article": 6.25
     },
-    "scraped_at": "2025-11-10T21:11:23.351252"
+    "scraped_at": "2025-11-11T15:05:08.863615"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-283/",
@@ -1217,7 +1217,7 @@
       "avg_chunk_length": 651.0666666666667,
       "avg_chunks_per_article": 7.5
     },
-    "scraped_at": "2025-11-10T21:11:25.007518"
+    "scraped_at": "2025-11-11T15:05:10.664159"
   },
   {
     "url": "https://www.deeplearning.ai/the-batch/issue-282/",
@@ -1235,6 +1235,6 @@
       "avg_chunk_length": 0,
       "avg_chunks_per_article": 0
     },
-    "scraped_at": "2025-11-10T21:11:26.554656"
+    "scraped_at": "2025-11-11T15:05:12.216756"
   }
 ]
