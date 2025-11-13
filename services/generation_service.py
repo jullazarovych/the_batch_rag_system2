@@ -37,7 +37,13 @@ def _download_image(url):
     try:
         response = requests.get(url, timeout=3)
         response.raise_for_status()
-        return Image.open(BytesIO(response.content))
+        img = Image.open(BytesIO(response.content))
+        if img.mode in ('P', 'RGBA', 'LA'):
+            img = img.convert('RGB')
+            
+        img.thumbnail((800, 800))
+        
+        return img
     except Exception:
         return None
 
