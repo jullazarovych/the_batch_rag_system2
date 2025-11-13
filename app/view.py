@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from services import orchestrator, retrieval_service
+from services import orchestrator 
 
 main_bp = Blueprint('main', __name__)
 
@@ -14,9 +14,7 @@ def main():
         user_query = request.form.get('query')
 
         if user_query:
-            answer, text_sources = orchestrator.get_rag_response(user_query)
-            
-            image_results = retrieval_service.search_images_by_text(user_query, limit=3)
+            answer, text_sources, image_results = orchestrator.get_rag_response(user_query)
 
     return render_template(
         "base.html", 

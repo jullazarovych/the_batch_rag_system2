@@ -4,3 +4,4 @@ __pycache__/
 .flaskenv
 weaviate_data/
 data/
+.env

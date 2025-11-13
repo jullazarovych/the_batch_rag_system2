@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multimodal RAG Demo — FlaskApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
         body.main {
@@ -29,12 +30,22 @@
             border-radius: 0.5rem;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
             height: 100%; 
+            position: relative;
+            display: flex;      
+            flex-direction: column; 
+        }
+        
+        .chunk-img {
+            width: 100%;
+            height: 150px;       
+            object-fit: cover;   
+            border-radius: 4px;
+            margin-bottom: 10px;
         }
         .generated-answer {
             background-color: #e9f5ff;
             border-left: 4px solid #0d6efd;
             font-size: 1.1rem;
-            white-space: pre-wrap; 
         }
         .text-snippet {
             font-size: 0.9rem;
@@ -42,7 +53,23 @@
             font-style: italic;
             border-left: 3px solid #eee;
             padding-left: 10px;
+            flex-grow: 1;
         }
+        
+        .img-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: white;
+            z-index: 10; 
+        }
+        .badge-context { background-color: #198754; }
+        .badge-clip { background-color: #6610f2; }
+        
         footer {
             background-color: #f8f9fa;
             margin-top: 3rem;
@@ -65,7 +92,13 @@
         {% if answer %}
             <h2>Generated Answer</h2>
             <div class="result-card generated-answer">
-                <p>{{ answer }}</p>
+                <div id="answer-content"></div>
+                <script>
+                    const rawAnswer = {{ answer | tojson | safe }};
+                    if (rawAnswer) {
+                        document.getElementById('answer-content').innerHTML = marked.parse(rawAnswer);
+                    }
+                </script>
             </div>
         {% endif %}
 
@@ -75,9 +108,17 @@
                 {% for source in text_sources %}
                     <div class="col-md-6 mb-3">
                         <div class="result-card">
+                            
+                            {% if source.image_url %}
+                                <img src="{{ source.image_url }}" class="chunk-img" alt="Article Image">
+                            {% endif %}
+
                             <h5>{{ source.news_title }}</h5>
                             <p class="text-snippet">"{{ source.content[:200] }}..."</p>
-                            <a href="{{ source.issue_url }}" target="_blank">Read full article</a>
+                            
+                            <div class="mt-auto">
+                                <a href="{{ source.issue_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Read full article</a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -85,14 +126,22 @@
         {% endif %}
 
         {% if image_results %}
-            <h2>Relevant Images Found</h2>
+            <h2>All Relevant Images (Gallery)</h2>
             <div class="row">
                 {% for img in image_results %}
                     <div class="col-md-4 mb-3">
                         <div class="result-card text-center">
-                            <img src="{{ img.image_url }}" class="img-fluid mb-2" alt="Image preview">
-                            <p class="mb-1"><strong>{{ img.news_title }}</strong></p>
-                            <a href="{{ img.issue_url }}" target="_blank">View article</a>
+                            
+                            {% if img.type == 'Context' %}
+                                <span class="img-badge badge-context">From Article</span>
+                            {% elif img.type == 'CLIP' %}
+                                <span class="img-badge badge-clip">Visual Match</span>
+                            {% endif %}
+
+                            <img src="{{ img.image_url }}" class="img-fluid mb-2" alt="Image preview" style="height: 200px; object-fit: contain;">
+                            
+                            <p class="mb-1 mt-2 small"><strong>{{ img.news_title }}</strong></p>
+                            <a href="{{ img.issue_url }}" target="_blank" class="btn btn-sm btn-link">View article</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -104,7 +153,6 @@
                 No text or image results found for "<strong>{{ user_query }}</strong>".
             </div>
         {% endif %}
-
 
         <footer class="text-center py-4 mt-5">
             <p>&copy; 2025 Yuliia Lazarovych. Усі права захищені.</p>

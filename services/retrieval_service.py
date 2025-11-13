@@ -43,7 +43,13 @@ def search_text_chunks(query: str, limit: int = 5, alpha: float = 0.7) -> list:
             query=query,
             limit=limit,
             alpha=alpha,
-            return_properties=["content", "news_title", "issue_date", "issue_url"]
+            return_properties=[
+                "content", 
+                "news_title", 
+                "issue_date", 
+                "issue_url", 
+                "image_url"  
+            ]
         )
         
         return [chunk.properties for chunk in response.objects]
