@@ -103,7 +103,7 @@
         {% endif %}
 
         {% if text_sources %}
-            <h2>Sources Used</h2>
+            <h2>Sources Used (Text Match)</h2>
             <div class="row">
                 {% for source in text_sources %}
                     <div class="col-md-6 mb-3">
@@ -113,11 +113,20 @@
                                 <img src="{{ source.image_url }}" class="chunk-img" alt="Article Image">
                             {% endif %}
 
-                            <h5>{{ source.news_title }}</h5>
+                            <h5>{{ source.title }}</h5>
+
+                            {% if source.date and source.date != '1970-01-01' and source.date != 'Unknown' %}
+                                <p class="text-muted small mb-2">
+                                    📅 {{ source.date[:10] }}
+                                </p>
+                            {% endif %}
+
+                            <p class="text-snippet">"{{ source.content[:200] }}..."</p>
+
                             <p class="text-snippet">"{{ source.content[:200] }}..."</p>
                             
                             <div class="mt-auto">
-                                <a href="{{ source.issue_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Read full article</a>
+                                <a href="{{ source.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Read full article</a>
                             </div>
                         </div>
                     </div>
@@ -125,10 +134,10 @@
             </div>
         {% endif %}
 
-        {% if image_results %}
+        {% if image_sources %}
             <h2>Relevant Images Found (Visual Search)</h2>
             <div class="row">
-                {% for img in image_results %}
+                {% for img in image_sources %}
                     <div class="col-md-4 mb-3">
                         <div class="result-card text-center">
                             
@@ -136,25 +145,20 @@
 
                             <img src="{{ img.image_url }}" class="img-fluid mb-2" alt="Image preview" style="height: 200px; object-fit: contain;">
                             
-                            <p class="mb-1 mt-2 small"><strong>{{ img.news_title }}</strong></p>
-                            <a href="{{ img.issue_url }}" target="_blank" class="btn btn-sm btn-link">View article</a>
+                            <p class="mb-1 mt-2 small"><strong>{{ img.title }}</strong></p>
+                            
+                            <a href="{{ img.url }}" target="_blank" class="btn btn-sm btn-link">View article</a>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
 
-        {% if not answer and not image_results and user_query %}
+        {% if not answer and not image_sources and user_query %}
             <div class="alert alert-warning mt-4 text-center">
                 No text or image results found for "<strong>{{ user_query }}</strong>".
             </div>
         {% endif %}
 
         <footer class="text-center py-4 mt-5">
-            <p>&copy; 2025 Yuliia Lazarovych. Усі права захищені.</p>
-        </footer>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+            <p>&copy; 2025 Yuliia Lazarovych. Усі права захищені.</p

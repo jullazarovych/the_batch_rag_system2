@@ -87,7 +87,7 @@ def search_images_by_text(query: str, limit: int = 3) -> list:
             query=query,
             vector=final_vector_list,
             limit=limit,
-            alpha=0.9,
+            alpha=0.7,
             return_properties=["image_url", "news_title", "issue_url"]
         )
         
