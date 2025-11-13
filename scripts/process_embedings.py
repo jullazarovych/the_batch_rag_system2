@@ -119,13 +119,14 @@ def import_text_data(client, chunks_data):
 
     failed_objects = []
 
-    with text_collection.batch.dynamic() as batch:
+    with text_collection.batch.fixed_size(batch_size=10, concurrent_requests=1) as batch:
         for chunk in tqdm(chunks_data):
             content = chunk.get("content")
             if not content or not content.strip():
                 continue
 
             try:
+                image_data = chunk.get("image") or {}
                 props = {
                     "content": str(content),
                     "issue_id": int(chunk.get("issue_id") or 0),
@@ -133,8 +134,8 @@ def import_text_data(client, chunks_data):
                     "issue_url": str(chunk.get("issue_url") or ""),
                     "issue_title": str(chunk.get("issue_title") or ""),
                     "news_title": str(chunk.get("news_title") or ""),
-                    "image_url": str(chunk.get("image", {}).get("url") or ""),
-                    "image_caption": str(chunk.get("image", {}).get("caption") or ""),
+                    "image_url": str(image_data.get("url") or ""),
+                    "image_caption": str(image_data.get("caption") or ""),
                 }
 
                 batch.add_object(properties=props)
