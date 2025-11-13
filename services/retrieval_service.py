@@ -2,6 +2,7 @@ import weaviate
 from weaviate.connect import ConnectionParams
 import torch
 import clip
+from weaviate.classes.init import AdditionalConfig, Timeout
 import numpy as np 
 
 try:
@@ -11,7 +12,6 @@ try:
 except Exception as e:
     print(f"(Retriever) Error loading CLIP model: {e}")
     clip_model = None
-
 try:
     weaviate_client = weaviate.WeaviateClient(
         connection_params=ConnectionParams.from_params(
@@ -21,6 +21,9 @@ try:
             grpc_host="localhost",
             grpc_port=50051,
             grpc_secure=False,
+        ),
+        additional_config=AdditionalConfig(
+            timeout=Timeout(init=60, query=120, insert=120) 
         )
     )
     weaviate_client.connect()
