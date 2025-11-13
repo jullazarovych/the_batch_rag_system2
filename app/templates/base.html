@@ -126,17 +126,13 @@
         {% endif %}
 
         {% if image_results %}
-            <h2>All Relevant Images (Gallery)</h2>
+            <h2>Relevant Images Found (Visual Search)</h2>
             <div class="row">
                 {% for img in image_results %}
                     <div class="col-md-4 mb-3">
                         <div class="result-card text-center">
                             
-                            {% if img.type == 'Context' %}
-                                <span class="img-badge badge-context">From Article</span>
-                            {% elif img.type == 'CLIP' %}
-                                <span class="img-badge badge-clip">Visual Match</span>
-                            {% endif %}
+                            <span class="img-badge badge-clip">Visual Match</span>
 
                             <img src="{{ img.image_url }}" class="img-fluid mb-2" alt="Image preview" style="height: 200px; object-fit: contain;">
                             

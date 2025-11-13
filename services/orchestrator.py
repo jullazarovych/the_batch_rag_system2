@@ -2,60 +2,60 @@ from . import retrieval_service
 from . import generation_service 
 
 def get_rag_response(user_query):
-    context_chunks = []
-    combined_images = []
-    seen_urls = set() 
+    unique_articles = []
+    seen_titles = set()
+    shown_image_urls = set() 
+    clip_images = [] 
+    
     try:
-        context_chunks = retrieval_service.search_text_chunks(user_query, limit=5)
-        if context_chunks:
-            for chunk in context_chunks:
-                img_url = chunk.get('image_url')
-                if img_url and img_url not in seen_urls:
-                    combined_images.append({
-                        'image_url': img_url,
-                        'news_title': chunk.get('news_title'),
-                        'issue_url': chunk.get('issue_url'),
-                        'type': 'Context' 
-                    })
-                    seen_urls.add(img_url)
-
-        clip_images = retrieval_service.search_images_by_text(user_query, limit=3)
+        raw_chunks = retrieval_service.search_text_chunks(user_query, limit=50)
         
-        if clip_images:
-            for img in clip_images:
-                img_url = img.get('image_url')
-                if img_url and img_url not in seen_urls:
-                    combined_images.append({
-                        'image_url': img_url,
-                        'news_title': img.get('news_title'),
-                        'issue_url': img.get('issue_url'),
-                        'type': 'CLIP' 
-                    })
-                    seen_urls.add(img_url)
+        if raw_chunks:
+            for chunk in raw_chunks:
+                title = chunk.get('news_title')
+                
+                if title and title not in seen_titles:
+                    unique_articles.append(chunk)
+                    seen_titles.add(title)
+                    
+                    if chunk.get('image_url'):
+                        shown_image_urls.add(chunk.get('image_url'))
+                
+                if len(unique_articles) >= 5:
+                    break
         
-        combined_images = combined_images[:4]
+        if not unique_articles:
+            clip_images = retrieval_service.search_images_by_text(user_query, limit=3)
+            return "Unfortunately, I did not find any relevant information.", [], clip_images
 
-        if not context_chunks:
-            return "Unfortunately, I did not find any relevant information to answer this question.", [], combined_images
+        raw_clip_images = retrieval_service.search_images_by_text(user_query, limit=5)
+        
+        if raw_clip_images:
+            for img in raw_clip_images:
+                url = img.get('image_url')
+                if url and url not in shown_image_urls:
+                    img['type'] = 'CLIP' 
+                    clip_images.append(img)
+                    shown_image_urls.add(url) 
+        
+        clip_images = clip_images[:3]
 
     except Exception as e:
         print(f"CRITICAL ERROR: Retrieval component failed: {e}")
-        return f"A critical error occurred in retrieval service: {e}", [], []
+        return f"A critical error occurred: {e}", [], []
 
-    
     try:
         answer, _ = generation_service.generate_answer_from_context(
             user_query, 
-            context_chunks
+            unique_articles 
         )
-        
-        return answer, context_chunks, combined_images
+        return answer, unique_articles, clip_images
         
     except Exception as e:
-        print(f"WARNING: Generation component failed: {e}. Falling back to retrieval-only.")
+        print(f"WARNING: Generation component failed: {e}. Falling back.")
         
         fallback_answer = (
-            "An error occurred during response generation (Generation service unavailable).\n"
-            "Below are the raw search results that were found:"
+            "An error occurred during response generation.\n"
+            "Below are the top unique articles found:"
         )
-        return fallback_answer, context_chunks, combined_images
+        return fallback_answer, unique_articles, clip_images
