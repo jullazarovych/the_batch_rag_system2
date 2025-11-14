@@ -4,115 +4,43 @@ A Multimodal Retrieval-Augmented Generation (RAG) Search System designed to answ
 
 ## Key Features
 
-* **Multimodal Search:** 
-  - **Text:** Hybrid search (BM25 + vector similarity, alpha=0.7) using Sentence Transformers (all-MiniLM-L6-v2)
-  - **Images:** CLIP ViT-B/32 embeddings with negative prompt filtering (0.6 weight against diagrams, charts, text)
-  - **Parallel retrieval:** 15 text chunks + 5 images per query
-  
-* **Smart Ranking & Generation:** 
-  - Gemini 1.5 Flash as reranker and answer generator
-  - Analyzes candidates with priority: **Relevance > Recency > Visual Evidence**
-  - Processes both text (6000 chars per article) and images (auto-resized to 800x800, RGB conversion)
-  - Automatic model selection (scans for available Flash models)
-  
-* **Full Article Context:** 
-  - Indexes chunks (1000 chars, 200 overlap) using LangChain's RecursiveCharacterTextSplitter
-  - Retrieves **full articles** from JSON database (ARTICLES_DB) for complete context
-  - Separators: `\n\n`, `\n`, `. `, `! `, `? `, ` `, `""`
-  
-* **Robust Error Handling:**
-  - Automatic retry with exponential backoff for Google API quota limits (429 errors: 20s, 40s, 60s)
-  - Image preprocessing (RGB conversion, 800x800 thumbnails, timeout: 3s)
-  - Graceful fallbacks for missing data
-  - Extended Weaviate timeouts (init: 60s, query: 120s, insert: 120s)
-  
-* **Evaluation System:**
-  - LLM-as-a-Judge approach using Gemini
-  - Custom metrics: Faithfulness, Answer Relevancy, Context Precision, Ground Truth Similarity
-  - 10-second cooldowns between API calls to avoid rate limits
-  
-* **Web Interface:** 
-  - Flask-based UI displaying generated answer, source articles (top 6), and image gallery (top 4)
+### Multimodal Search
+- **Text:** Hybrid search (BM25 + vector, alpha=0.7) using Sentence Transformers (all-MiniLM-L6-v2)
+- **Images:** CLIP ViT-B/32 with negative prompt filtering against diagrams/charts
+- **Parallel retrieval:** 15 text chunks + 5 images per query
 
----
+### Smart Generation
+- Gemini 1.5 Flash for reranking and answer generation
+- Priority ranking: Relevance > Recency > Visual Evidence
+- Full article context retrieval from JSON database
+- Automatic retry with exponential backoff for API rate limits
 
-## Architecture and Data Flow
+### Web Interface
+- Flask-based UI displaying answers, top 6 sources, and top 4 images
 
-1. **Data Collection (`scripts/data_collection.py`):** 
-   * Scrapes N pages from deeplearning.ai/the-batch/
-   * Extracts articles using BeautifulSoup (finds `<h1 id="news">`)
-   * Processes content elements: paragraphs, lists, divs
-   * Splits into chunks using RecursiveCharacterTextSplitter (1000/200)
-   * Stores three JSON files:
-     - `data/raw/batch_articles.json` (raw scraped data)
-     - `data/processed/batch_chunks.json` (individual chunks with metadata)
-     - `data/processed/news_articles.json` (full articles for ARTICLES_DB)
+## Architecture
 
-2. **Indexing (`scripts/process_embedings.py`):**
-   * Connects to local Weaviate (http://localhost:8080, grpc://localhost:50051)
-   * Creates two collections:
-     - **BatchChunk:** Text chunks vectorized using Hugging Face text2vec (all-MiniLM-L6-v2)
-       - Properties: content, issue_id, issue_date, issue_url, issue_title, news_title, image_url, image_caption
-     - **BatchImage:** Images vectorized using local CLIP ViT-B/32
-       - Properties: image_url, news_title, issue_id, issue_url
-   * Batch import: 10 objects/batch for text, dynamic batching for images
-   * Verifies counts after import
+### 1. Data Collection (`scripts/data_collection.py`)
+- Scrapes articles from deeplearning.ai/the-batch/
+- Splits content into chunks (1000 chars, 200 overlap)
+- Outputs:
+  - `batch_articles.json` (raw data)
+  - `batch_chunks.json` (indexed chunks)
+  - `news_articles.json` (full articles)
 
-3. **Application (`run.py` + `app/`):** 
-   * Launches Flask web server on port 5000
+### 2. Indexing (`scripts/process_embedings.py`)
+- Connects to local Weaviate (localhost:8080)
+- Creates collections:
+  - **BatchChunk:** Text embeddings (all-MiniLM-L6-v2)
+  - **BatchImage:** Image embeddings (CLIP ViT-B/32)
 
-4. **Query Flow (UI -> `app/view.py`):** 
-   * User enters query through web interface
+### 3. Query Flow
+1. User submits query via web interface
+2. Orchestrator performs parallel text + image search
+3. Retrieves full articles from in-memory database
+4. Gemini reranks and generates answer with citations
+5. Returns answer + sources + image gallery
 
-5. **Orchestration (`services/orchestrator.py`):**
-   * On startup: Loads `news_articles.json` into memory (ARTICLES_DB dict, keyed by title)
-   * Calls `retrieval_service` for parallel search:
-     - **Text search:** Hybrid search (alpha=0.7) on BatchChunk collection (limit: 15)
-     - **Image search:** CLIP-based search on BatchImage collection (limit: 5)
-   * Collects unique articles by title into `all_candidates_map`
-   * For each unique title, pulls full article content from ARTICLES_DB
-   * Sorts candidates by date (newest first using ISO date strings)
-   * Sends top 6 candidates to `generation_service`
-   * Returns: answer, top 6 sources, top 4 gallery images
-
-6. **Retrieval (`services/retrieval_service.py`):**
-   * Initializes on import:
-     - Connects to Weaviate (localhost:8080, grpc:50051)
-     - Loads CLIP ViT-B/32 model to CUDA/CPU
-     - Gets BatchChunk and BatchImage collections
-   * **Text Search (hybrid):**
-     - Weaviate hybrid query with alpha=0.7 (70% vector, 30% BM25)
-     - Returns: content, news_title, issue_date, issue_url, image_url
-   * **Image Search:**
-     - Generates CLIP text embedding for query
-     - Creates negative vector from: "diagram", "chart", "text", "abstract art", "screenshot"
-     - Subtracts 0.6 * negative_vector from positive_vector
-     - Normalizes final vector (L2 norm)
-     - Hybrid query with alpha=0.7
-     - Returns: image_url, news_title, issue_url
-
-7. **Generation (`services/generation_service.py`):**
-   * On startup:
-     - Lists all available Gemini models
-     - Selects first Flash model with generateContent support
-     - Falls back to "models/gemini-1.5-flash" if none found
-   * For each candidate:
-     - Downloads images (max 800x800, converts P/RGBA/LA to RGB, timeout: 3s)
-     - Truncates article content to first 6000 chars
-   * Constructs multimodal prompt:
-     - System instructions (priority: Relevance > Recency > Visual Evidence)
-     - Article metadata (title, date, source_type)
-     - Article content (6000 chars max)
-     - Associated images (PIL Image objects)
-   * Handles errors:
-     - Catches `google_exceptions.ResourceExhausted` (429)
-     - Exponential backoff: 20s, 40s, 60s (3 retries max)
-   * Returns: Markdown-formatted answer with source citations
-
-8. **Response (`app/templates/base.html`):** 
-   * Renders the answer, sources, and image gallery
-
----
 
 ## Installation and Startup
 
@@ -541,7 +469,8 @@ questions_to_run = test_questions[:2]  # Test with 2 questions first
 
 ---
 
-**Project Link:** [https://github.com/jullazarovych/the_batch_rag_system2](https://github.com/jullazarovych/the_batch_rag_system2)
-**VIDEO DEMO:** [DEMO](https://drive.google.com/file/d/1Dhl6S1vP4P-1zsNKpxkcgoOv7xIzjPrB/view?usp=sharing)
+- **Project Link:** [https://github.com/jullazarovych/the_batch_rag_system2](https://github.com/jullazarovych/the_batch_rag_system2)
+
+- 1:35 **VIDEO DEMO:** [DEMO](https://drive.google.com/file/d/1Dhl6S1vP4P-1zsNKpxkcgoOv7xIzjPrB/view?usp=sharing)
 
 ---
