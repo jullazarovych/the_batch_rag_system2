@@ -25,7 +25,6 @@ class BatchDataCollector:
     def get_article_links(self, max_pages=1):
         issue_links = [] 
         
-        # Ми створюємо список сторінок, які треба обійти
         urls_to_scrape = []
         if max_pages == 1:
             urls_to_scrape.append(self.base_url)
@@ -36,7 +35,6 @@ class BatchDataCollector:
                 else:
                     urls_to_scrape.append(urljoin(self.base_url, f'page/{page_num}/'))
 
-        # Тепер проходимо по кожному URL і збираємо дані
         for url in urls_to_scrape:
             print(f"Scraping page: {url}")
 
@@ -46,7 +44,6 @@ class BatchDataCollector:
 
                 for link in soup.find_all('a', href=True):
                     href = link['href']
-                    # Шукаємо посилання на випуски
                     match = re.search(r'/the-batch/issue-(\d+)/?$', href)
                     if match:
                         issue_number = int(match.group(1))
@@ -55,13 +52,10 @@ class BatchDataCollector:
             except Exception as e:
                 print(f"Error scraping page {url}: {e}")
 
-        # Видаляємо дублікати
         issue_links = list(dict.fromkeys(issue_links))
 
-        # Сортуємо від найновіших до найстаріших
         sorted_links = sorted(issue_links, key=lambda x: x[0], reverse=True)
         
-        # Повертаємо тільки URL
         return [url for _, url in sorted_links]
 
 

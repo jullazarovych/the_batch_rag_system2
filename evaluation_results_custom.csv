@@ -1,0 +1,24 @@
+question,answer,ground_truth,faithfulness,answer_relevancy,context_precision,ground_truth_similarity
+What is one specific measure Character.AI is implementing to limit access for young users?,"Character.AI is implementing a measure to limit access for young users by gradually reducing chat time for users under 18, starting with a daily limit of 2 hours and tapering to zero by November 25.
+
+Toward Safer (and Sexier) Chatbots","Character.AI moved to limit chat time for users under 18, starting with 2 hours daily and tapering to zero by November 25.",1.0,1.0,0.7,0.95
+What is the name of the new image generator released by Tencent?,"Tencent released a new image generator named HunyuanImage-3.0.
+
+*   HunyuanImage-3.0 is a new image generator that reasons over prompts to produce images.
+*   It is fine-tuned to apply reasoning via various reinforcement learning methods, which helps it understand user intentions and improve output.
+*   Currently, it holds first place in the LMArena Text-to-Image leaderboard.
+
+(Source: Better Images Through Reasoning)",HunyuanImage-3.0.,1.0,1.0,0.5,1.0
+"According to the State of AI Report 2025, what are the new barriers to AI's economic potential?","According to the eighth annual State of AI Report 2025, the barriers to AI's economic potential have shifted from technical limitations to new challenges concerning capital, politics, and physics.
+
+Specifically, these new barriers include:
+*   **Capital** The immense financial commitments required, such as the hundreds of billions of dollars dedicated by companies like OpenAI to build data centers.
+*   **Politics** The complexities of national and international regulation and competition. This involves regulators grappling with the prospect that overregulation could stymie economic growth, the push to pre-empt state-level AI laws, and intensified international competition seen in national AI strategies like the U.S.'s ""America-first"" approach and China's accelerated domestic industry building.
+*   **Physics** The practical limitations related to infrastructure, particularly the availability of electrical power needed to drive AI data centers (""The Year AI Went Industrial"").","The barriers have shifted from technical limitations to matters of capital, politics, and physics.",1.0,1.0,0.6,1.0
+Is Chronos-2 available for commercial use?,"Yes, Chronos-2 is available for commercial use. Its weights are released under the Apache 2.0 license, which permits both commercial and noncommercial applications.
+
+### Source
+*   ""Forecasting Multiple Time Series""","Yes, Chronos-2's weights are available for commercial and noncommercial uses under the Apache 2.0 license.",1.0,1.0,0.35,0.95
+What percentage stake does Microsoft hold in OpenAI under the new terms?,"Under the new terms of their partnership, Microsoft holds a 27 percent stake in OpenAI.
+
+*   ""OpenAI Reorganizes For Profit""",Microsoft holds a 27 percent stake in OpenAI.,1.0,1.0,0.4,1.0
